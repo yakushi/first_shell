@@ -30,14 +30,17 @@ fn main() {
                     eprintln!("{}", e);
                 }
             },
+            "exit" => return,
             command => {
                 let mut child = Command::new(command)
                     .args(args)
-                    .spawn()
-                    .unwrap();
+                    .spawn();
 
-                // don't accept another command until this one completes
-                child.wait();
+                // gracefully handle malformed user input
+                match child {
+                    Ok(mut child) => { child.wait(); },
+                    Err(e) => eprintln!("{}", e),
+                }
             }
         }
     }
